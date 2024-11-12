@@ -48,7 +48,12 @@ module.exports = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+        // Custom colors
+        white: '#fffcf8',
+        orange: '#ed6d06',
+        orangeLight: '#ffead9',
+        pink: '#ca1830'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
