@@ -31,9 +31,19 @@ import {
  * @param {string} props.options[].label - Label of the option
  * @param {string} props.value - Current value
  * @param {function} props.setValue - Function to set the value
+ * @param {string} props.iconName - Icon name
  */
-export default function Combobox({ placeholder, initialText, noResultsText, options, value, setValue }) {
+export default function Combobox({
+  placeholder,
+  initialText,
+  noResultsText,
+  options,
+  value,
+  setValue,
+  icon
+}) {
 
+  // Internal state
   const [open, setOpen] = useState(false)
 
   return (
@@ -45,9 +55,17 @@ export default function Combobox({ placeholder, initialText, noResultsText, opti
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : initialText}
+          <span
+            className={`flex align-center justify-start w-full gap-2 ${!value && "text-muted-foreground"}`}
+          >
+            {/* Render the dynamic icon if it exists */}
+            {icon}
+
+            {/* Render text */}
+            {value
+              ? options.find((option) => option.value === value)?.label
+              : initialText}
+          </span>
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>

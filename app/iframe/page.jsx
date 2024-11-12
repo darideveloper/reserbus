@@ -8,6 +8,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card"
+import { MapIcon, MapPinIcon } from "lucide-react"
 
 // Custom components
 import Combobox from "@/components/Combobox"
@@ -72,6 +73,7 @@ export default function Iframe() {
               options={fromRoutesCombo}
               value={fromRouteSelected}
               setValue={setFromRouteSelected}
+              icon={<MapIcon />}
             />
 
             {/* To selector */}
@@ -82,6 +84,7 @@ export default function Iframe() {
               options={toRoutesCombo}
               value={toRouteSelected}
               setValue={setToRouteSelected}
+              icon={<MapPinIcon />}
             />
 
             <DatePicker
