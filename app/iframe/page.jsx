@@ -65,7 +65,7 @@ export default function Iframe() {
         <form>
           <div className="grid w-full items-center gap-4">
 
-            {/* From selector */}
+            {/* From and to routes selectors */}
             <Combobox
               initialText={"Selecciona tu origen"}
               placeholder={"Buscar por cuidad, provincia o pueblo"}
@@ -76,7 +76,6 @@ export default function Iframe() {
               icon={<MapIcon />}
             />
 
-            {/* To selector */}
             <Combobox
               initialText={"Selecciona tu destino"}
               placeholder={"Buscar por cuidad, provincia o pueblo"}
@@ -87,6 +86,7 @@ export default function Iframe() {
               icon={<MapPinIcon />}
             />
 
+            {/* Departure and return dates */}
             <DatePicker
               placeholder={"Fecha de salida"}
               value={departureDate}
@@ -94,9 +94,9 @@ export default function Iframe() {
             />
 
             <DatePicker
-              placeholder={"Fecha de llegada"}
-              value={departureDate}
-              setValue={setDepartureDate}
+              placeholder={"Fecha de regreso"}
+              value={returnDate}
+              setValue={setReturnDate}
             />
 
           </div>
