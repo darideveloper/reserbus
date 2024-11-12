@@ -6,14 +6,12 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 
 // Custom components
 import Combobox from "@/components/Combobox"
+import DatePicker from "@/components/DatePicker"
 
 // Data
 import { routes } from "@/data/routes"
@@ -28,13 +26,19 @@ function getValueLabel(value) {
 
 export default function Iframe() {
 
+  // Form dynamic data
   const fromRoutes = Object.keys(routes)
   const fromRoutesCombo = fromRoutes.map((route) => {
     return getValueLabel(route)
   })
   const [toRoutesCombo, setToRoutesCombo] = useState([])
+  const [noResultsToText, setNoResultsToText] = useState("No se encontraron resultados")
+
+  // Form values
   const [fromRouteSelected, setFromRouteSelected] = useState("")
   const [toRouteSelected, setToRouteSelected] = useState("")
+  const [departureDate, setDepartureDate] = useState(null)
+  const [returnDate, setReturnDate] = useState(null)
 
   useEffect(() => {
     // Update toRoutesCombo when fromRouteSelected changes
@@ -44,8 +48,15 @@ export default function Iframe() {
         return getValueLabel(route)
       })
       setToRoutesCombo(toRoutesCombo)
+    } else {
+      // Change setNoResultsText when fromRouteSelected is empty
+      setNoResultsToText("Elige un origen.")
     }
   }, [fromRouteSelected])
+
+  useEffect(() => {
+    console.log(departureDate)
+  }, [departureDate])
 
   return (
     <Card className="w-11/12 p-4 m-4 mx-auto bg-white">
@@ -67,10 +78,22 @@ export default function Iframe() {
             <Combobox
               initialText={"Selecciona tu destino"}
               placeholder={"Buscar por cuidad, provincia o pueblo"}
-              noResultsText={"No se encontraron resultados"}
+              noResultsText={noResultsToText}
               options={toRoutesCombo}
               value={toRouteSelected}
               setValue={setToRouteSelected}
+            />
+
+            <DatePicker
+              placeholder={"Fecha de salida"}
+              value={departureDate}
+              setValue={setDepartureDate}
+            />
+
+            <DatePicker
+              placeholder={"Fecha de llegada"}
+              value={departureDate}
+              setValue={setDepartureDate}
             />
 
           </div>

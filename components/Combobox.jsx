@@ -21,6 +21,16 @@ import {
 
 /**
  * Combobox component
+ * 
+ * @param {object} props
+ * @param {string} props.placeholder - Placeholder text
+ * @param {string} props.initialText - Initial text before selecting an option
+ * @param {string} props.noResultsText - Text to show when there are no results
+ * @param {object[]} props.options - Array of options
+ * @param {string} props.options[].value - Value of the option
+ * @param {string} props.options[].label - Label of the option
+ * @param {string} props.value - Current value
+ * @param {function} props.setValue - Function to set the value
  */
 export default function Combobox({ placeholder, initialText, noResultsText, options, value, setValue }) {
 
