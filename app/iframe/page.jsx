@@ -130,7 +130,7 @@ export default function Iframe() {
   }
 
   return (
-    <Card className="w-11/12 p-4 m-4 mx-auto bg-white">
+    <Card className="w-11/12 p-4 m-4 mx-auto bg-orangeLight">
       <CardContent className="pt-6">
         <form
           className={`
@@ -291,9 +291,13 @@ export default function Iframe() {
             className={`
               w-full
               max-w-3xl
+              bg-orange hover:bg-orange
+              shadow-md hover:shadow-xl
+              duration-300
+              transition-all
+              hover:h-12
             `}
             disabled={!formReady}
-
           >
             Buscar
           </Button>
