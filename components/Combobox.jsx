@@ -32,6 +32,7 @@ import {
  * @param {string} props.value - Current value
  * @param {function} props.setValue - Function to set the value
  * @param {string} props.iconName - Icon name
+ * @param {string} props.errorMessage - Error message
  */
 export default function Combobox({
   placeholder,
@@ -40,7 +41,8 @@ export default function Combobox({
   options,
   value,
   setValue,
-  icon
+  icon,
+  errorMessage,
 }) {
 
   // Internal state

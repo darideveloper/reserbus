@@ -17,6 +17,7 @@ import Counter from "@/components/Counter"
 
 // Data
 import { routes } from "@/data/routes"
+import { phpSerializeAndEncode } from "@/lib/encoders"
 
 // Extra functions
 function getValueLabel(value) {
@@ -38,13 +39,17 @@ export default function Iframe() {
 
   // Form values
   const [fromRouteSelected, setFromRouteSelected] = useState("")
+  const [formRouteError, setFormRouteError] = useState("")
   const [toRouteSelected, setToRouteSelected] = useState("")
+  const [toRouteError, setToRouteError] = useState("")
   const [departureDate, setDepartureDate] = useState(null)
+  const [departureDateError, setDepartureDateError] = useState("")
   const [returnDate, setReturnDate] = useState(null)
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState([])
   const [seniors, setSeniors] = useState([])
 
+  // Detect changes on fromRouteSelected
   useEffect(() => {
     // Update toRoutesCombo when fromRouteSelected changes
     if (fromRouteSelected) {
@@ -59,14 +64,95 @@ export default function Iframe() {
     }
   }, [fromRouteSelected])
 
-  useEffect(() => {
-    console.log(departureDate)
-  }, [departureDate])
+  /**
+   * Format date to DD-MM-YYYY
+   * 
+   * @param {Date} date - Date object
+   * @returns {string} Formatted date
+   */
+  function getFormatDate(date) {
+    let day = String(date.getDate()).padStart(2, '0')
+    let month = String(date.getMonth() + 1).padStart(2, '0')
+    let year = date.getFullYear()
+
+    return `${day}-${month}-${year}`
+  }
+
+  /** Handle submit form and validate 
+   * 
+   * @param {Event} event
+  */
+  function handleSubmit(event) {
+
+    event.preventDefault()
+    let isError = false
+
+    // Validate fields and show errors
+    if (!fromRouteSelected) {
+      isError = true
+      setFormRouteError("Elige un origen.")
+    }
+
+    if (!toRouteSelected) {
+      isError = true
+      setToRouteError("Elige un destino.")
+    }
+
+    if (!departureDate) {
+      isError = true
+      setDepartureDateError("Elige una fecha de ida.")
+    }
+
+
+    if (!isError) {
+
+      // Process and encode data
+      const from = fromRouteSelected.toUpperCase()
+      const to = toRouteSelected.toUpperCase()
+      const departureDateStr = getFormatDate(departureDate)
+      const returnDateStr = returnDate ? getFormatDate(returnDate) : "X"
+      const passengers = adults + children.length + seniors.length
+      let viajeros = []
+      for (let i = 0; i < passengers; i++) {
+        viajeros.push(`${i + 1}@1@0@0`)
+      }
+      let viajerosStr = viajeros.join("~")
+
+      const data = {
+        login: process.env.NEXT_PUBLIC_MOVELIA_LOGIN,
+        pwd: '',
+        pwdag: process.env.NEXT_PUBLIC_MOVELIA_PASSWORD,
+        idioma: 'es',
+        origenAg: from,
+        destinoAg: to,
+        tipoViaje: '1',
+        fsalida: departureDateStr.replace("-", "_"),
+        fregreso: returnDateStr.replace("-", "_"),
+        viajeros: viajerosStr,
+      }
+      const encodedString = phpSerializeAndEncode(data)
+
+      // Open link in new tab
+      let link = `https://www.movelia.es/es/app/area-agencias/login?postData=${encodedString}&post_login=1`
+      console.log({ data, encodedString, link })
+      window.open(link, '_blank')
+    }
+
+  }
 
   return (
     <Card className="w-11/12 p-4 m-4 mx-auto bg-white">
-      <CardContent>
-        <form>
+      <CardContent className="pt-6">
+        <form
+          className={`
+            flex
+            flex-col
+            gap-6
+            items-center
+            justify-center
+          `}
+          onSubmit={handleSubmit}
+        >
           <div className="grid w-full items-center gap-4">
 
             <div
@@ -212,12 +298,16 @@ export default function Iframe() {
 
 
           </div>
+          <Button
+            className={`
+            w-full
+            max-w-3xl
+          `}
+          >
+            Buscar
+          </Button>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
-      </CardFooter>
     </Card>
   )
 }
