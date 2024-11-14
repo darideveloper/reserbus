@@ -39,15 +39,13 @@ export default function Iframe() {
 
   // Form values
   const [fromRouteSelected, setFromRouteSelected] = useState("")
-  const [formRouteError, setFormRouteError] = useState("")
   const [toRouteSelected, setToRouteSelected] = useState("")
-  const [toRouteError, setToRouteError] = useState("")
   const [departureDate, setDepartureDate] = useState(null)
-  const [departureDateError, setDepartureDateError] = useState("")
   const [returnDate, setReturnDate] = useState(null)
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState([])
   const [seniors, setSeniors] = useState([])
+  const [formReady, setFormReady] = useState(false)
 
   // Detect changes on fromRouteSelected
   useEffect(() => {
@@ -64,6 +62,17 @@ export default function Iframe() {
     }
   }, [fromRouteSelected])
 
+
+  useEffect(() => {
+    // Activate formReady when all required fields are filled
+    if (fromRouteSelected && toRouteSelected && departureDate) {
+      setFormReady(true)
+    } else {
+      setFormReady(false)
+    }
+  }, [toRouteSelected, departureDate, returnDate])
+
+
   /**
    * Format date to DD-MM-YYYY
    * 
@@ -78,6 +87,7 @@ export default function Iframe() {
     return `${day}-${month}-${year}`
   }
 
+
   /** Handle submit form and validate 
    * 
    * @param {Event} event
@@ -85,59 +95,38 @@ export default function Iframe() {
   function handleSubmit(event) {
 
     event.preventDefault()
-    let isError = false
+    if (!formReady) return
 
-    // Validate fields and show errors
-    if (!fromRouteSelected) {
-      isError = true
-      setFormRouteError("Elige un origen.")
+    // Process and encode data
+    const from = fromRouteSelected.toUpperCase()
+    const to = toRouteSelected.toUpperCase()
+    const departureDateStr = getFormatDate(departureDate)
+    const returnDateStr = returnDate ? getFormatDate(returnDate) : "X"
+    const passengers = adults + children.length + seniors.length
+    let viajeros = []
+    for (let i = 0; i < passengers; i++) {
+      viajeros.push(`${i + 1}@1@0@0`)
     }
+    let viajerosStr = viajeros.join("~")
 
-    if (!toRouteSelected) {
-      isError = true
-      setToRouteError("Elige un destino.")
+    const data = {
+      login: process.env.NEXT_PUBLIC_MOVELIA_LOGIN,
+      pwd: '',
+      pwdag: process.env.NEXT_PUBLIC_MOVELIA_PASSWORD,
+      idioma: 'es',
+      origenAg: from,
+      destinoAg: to,
+      tipoViaje: '1',
+      fsalida: departureDateStr.replace("-", "_"),
+      fregreso: returnDateStr.replace("-", "_"),
+      viajeros: viajerosStr,
     }
+    const encodedString = phpSerializeAndEncode(data)
 
-    if (!departureDate) {
-      isError = true
-      setDepartureDateError("Elige una fecha de ida.")
-    }
-
-
-    if (!isError) {
-
-      // Process and encode data
-      const from = fromRouteSelected.toUpperCase()
-      const to = toRouteSelected.toUpperCase()
-      const departureDateStr = getFormatDate(departureDate)
-      const returnDateStr = returnDate ? getFormatDate(returnDate) : "X"
-      const passengers = adults + children.length + seniors.length
-      let viajeros = []
-      for (let i = 0; i < passengers; i++) {
-        viajeros.push(`${i + 1}@1@0@0`)
-      }
-      let viajerosStr = viajeros.join("~")
-
-      const data = {
-        login: process.env.NEXT_PUBLIC_MOVELIA_LOGIN,
-        pwd: '',
-        pwdag: process.env.NEXT_PUBLIC_MOVELIA_PASSWORD,
-        idioma: 'es',
-        origenAg: from,
-        destinoAg: to,
-        tipoViaje: '1',
-        fsalida: departureDateStr.replace("-", "_"),
-        fregreso: returnDateStr.replace("-", "_"),
-        viajeros: viajerosStr,
-      }
-      const encodedString = phpSerializeAndEncode(data)
-
-      // Open link in new tab
-      let link = `https://www.movelia.es/es/app/area-agencias/login?postData=${encodedString}&post_login=1`
-      console.log({ data, encodedString, link })
-      window.open(link, '_blank')
-    }
-
+    // Open link in new tab
+    let link = `https://www.movelia.es/es/app/area-agencias/login?postData=${encodedString}&post_login=1`
+    console.log({ data, encodedString, link })
+    window.open(link, '_blank')
   }
 
   return (
@@ -300,9 +289,11 @@ export default function Iframe() {
           </div>
           <Button
             className={`
-            w-full
-            max-w-3xl
-          `}
+              w-full
+              max-w-3xl
+            `}
+            disabled={!formReady}
+
           >
             Buscar
           </Button>

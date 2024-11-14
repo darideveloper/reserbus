@@ -11,7 +11,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export default function valuePicker({ placeholder, value, setValue  }) {
+/**
+ * Date picker component
+ * 
+ * @param {object} props
+ * @param {string} props.placeholder - Placeholder text
+ * @param {Date} props.value - Current value
+ * @param {function} props.setValue - Function to set the value
+ */
+export default function DatePicker({ placeholder, value, setValue  }) {
 
   return (
     <Popover>

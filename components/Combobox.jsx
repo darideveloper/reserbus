@@ -32,7 +32,6 @@ import {
  * @param {string} props.value - Current value
  * @param {function} props.setValue - Function to set the value
  * @param {string} props.iconName - Icon name
- * @param {string} props.errorMessage - Error message
  */
 export default function Combobox({
   placeholder,
@@ -42,7 +41,6 @@ export default function Combobox({
   value,
   setValue,
   icon,
-  errorMessage,
 }) {
 
   // Internal state
@@ -55,7 +53,10 @@ export default function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={`
+            w-full
+            justify-between
+          `}
         >
           <span
             className={`flex align-center justify-start w-full gap-2 ${!value && "text-muted-foreground"}`}
